@@ -1,0 +1,70 @@
+<%- include('../partials/head', { title }) %>
+<main class="login-page">
+<div class="login-art">
+<div class="login-art-overlay">
+</div>
+<div class="login-brand">
+<span class="brand-mark">
+<i class="bi bi-flower1">
+</i>
+</span>
+<span>
+<strong>Lumière</strong>
+<small>COSMETIC MANAGEMENT</small>
+</span>
+</div>
+<div class="login-quote">
+<span class="quote-mark">“</span>
+<h1>Beauty in every<br>detail.</h1>
+<p>Quản lý tinh gọn. Trải nghiệm khác biệt.</p>
+</div>
+<div class="login-art-footer">A thoughtful way to manage beauty retail.</div>
+</div>
+<div class="login-form-side">
+<div class="login-form-wrap">
+<div class="mobile-login-brand">
+<i class="bi bi-flower1">
+</i> Lumière</div>
+<p class="eyebrow">WELCOME BACK</p>
+<h2>Đăng nhập</h2>
+<p class="muted">Đăng nhập để quản lý cửa hàng của bạn.</p>
+<%- include('../partials/flash') %>
+<form method="post" action="/login" class="form-stack">
+<div class="field">
+<label for="email">Email</label>
+<div class="input-icon">
+<i class="bi bi-envelope">
+</i>
+<input id="email" name="email" type="email" autocomplete="username" placeholder="name@store.com" required>
+</div>
+</div>
+<div class="field">
+<label for="password">Mật khẩu</label>
+<div class="input-icon">
+<i class="bi bi-lock">
+</i>
+<input id="password" name="password" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu" required>
+<button class="password-toggle" type="button" data-password-toggle="password" aria-label="Hiện mật khẩu">
+<i class="bi bi-eye">
+</i>
+</button>
+</div>
+</div>
+<button class="button button-primary button-wide" type="submit">Đăng nhập <i class="bi bi-arrow-right">
+</i>
+</button>
+</form>
+<p style="margin-top:18px;text-align:center">Chưa có tài khoản khách hàng? <a href="/register">Đăng ký tại đây</a></p>
+<div class="login-hint">
+<i class="bi bi-info-circle">
+</i>
+<span>Tài khoản demo được ghi trong README.md. Hãy đổi mật khẩu trước khi triển khai thực tế.</span>
+</div>
+<p class="login-copyright">© <%= new Date().getFullYear() %> Lumière Cosmetic</p>
+</div>
+</div>
+</main>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

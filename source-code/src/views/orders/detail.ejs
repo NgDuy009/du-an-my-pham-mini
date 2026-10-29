@@ -1,0 +1,123 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">SALES & CHECKOUT</p>
+<h1>
+<%= order.order_code %>
+</h1>
+<p class="muted">Chi tiết giao dịch và các mặt hàng đã bán.</p>
+</div>
+<div class="heading-actions">
+<a class="button button-secondary" href="/orders">
+<i class="bi bi-arrow-left">
+</i> Đơn hàng</a>
+<a class="button button-primary" href="/orders/<%= order.id %>/receipt" target="_blank">
+<i class="bi bi-printer">
+</i> In hóa đơn</a>
+</div>
+</section>
+<section class="panel detail-panel">
+<div class="order-detail-top">
+<div>
+<span class="status <%= order.status === 'COMPLETED' ? 'status-success' : order.status === 'CANCELLED' ? 'status-danger' : 'status-muted' %>">
+  <%= ({ COMPLETED: 'Hoàn thành', DRAFT: 'Nháp', CANCELLED: 'Đã hủy', REFUNDED: 'Đã hoàn tiền' })[order.status] || order.status %>
+</span>
+
+<% if (order.status === 'DRAFT' && currentUser && currentUser.role !== 'CUSTOMER') { %>
+  <form method="post"
+        action="/orders/<%= order.id %>/complete"
+        onsubmit="return confirm('Bạn xác nhận hoàn thành đơn hàng này?')"
+        style="margin-top: 16px;">
+    <button class="button button-primary" type="submit">
+      <i class="bi bi-check-circle"></i>
+      Đánh dấu hoàn thành
+    </button>
+  </form>
+<% } %>
+<h2>
+<%= order.customer_name || 'Khách lẻ' %>
+</h2>
+<p>
+<%= dateTime(order.created_at) %> · Thu ngân: <%= order.cashier_name || '—' %>
+</p>
+</div>
+<div class="order-total-large">
+<small>Tổng thanh toán</small>
+<strong>
+<%= money(order.total_amount) %>
+</strong>
+</div>
+</div>
+<div class="table-responsive">
+<table class="data-table">
+<thead>
+<tr>
+<th>SẢN PHẨM</th>
+<th>SKU</th>
+<th>SỐ LƯỢNG</th>
+<th>ĐƠN GIÁ</th>
+<th>THÀNH TIỀN</th>
+</tr>
+</thead>
+<tbody>
+<% items.forEach((item) => { %>
+<tr>
+<td>
+<strong>
+<%= item.product_name %>
+</strong>
+</td>
+<td>
+<span class="code-chip">
+<%= item.product_sku %>
+</span>
+</td>
+<td>
+<%= item.quantity %>
+</td>
+<td>
+<%= money(item.unit_price) %>
+</td>
+<td class="money-cell">
+<%= money(item.line_total) %>
+</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+</div>
+<div class="receipt-summary">
+<div>
+<span>Tạm tính</span>
+<strong>
+<%= money(order.subtotal) %>
+</strong>
+</div>
+<div>
+<span>Giảm giá</span>
+<strong>
+<%= money(order.discount_amount) %>
+</strong>
+</div>
+<div class="grand-total">
+<span>Tổng cộng</span>
+<strong>
+<%= money(order.total_amount) %>
+</strong>
+</div>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

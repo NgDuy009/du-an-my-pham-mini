@@ -1,0 +1,141 @@
+<%- include('../partials/head', { title }) %>
+<style>
+.customer-wrap{min-height:100vh;background:#faf7f4;color:#302a27}.customer-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px clamp(18px,4vw,56px);background:#fff;border-bottom:1px solid #eee4dc;position:sticky;top:0;z-index:5}.customer-brand{font:600 25px Georgia,serif;color:#3c302b;text-decoration:none}.customer-brand small{display:block;font:10px Arial,sans-serif;letter-spacing:2px;color:#9b7e70}.customer-nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.customer-nav a{color:#6c554a;text-decoration:none;font-size:14px}.customer-nav .button{padding:10px 14px}.customer-main{max-width:1320px;margin:auto;padding:34px 24px 60px}.customer-title{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:24px}.customer-title h1{font:600 clamp(30px,4vw,42px) Georgia,serif;margin:0 0 8px}.customer-muted{color:#8b7c73}.customer-search{display:flex;gap:8px;max-width:450px;width:100%}.customer-search input{min-width:0;flex:1;border:1px solid #e6d9cf;border-radius:10px;padding:12px;background:#fff}.customer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}.customer-card{background:#fff;border:1px solid #eee4dc;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px #3b201008}.customer-image{height:210px;background:#f3ece6;display:flex;align-items:center;justify-content:center;color:#b59d8d}.customer-image img{width:100%;height:100%;object-fit:cover}.customer-card-body{padding:16px}.customer-card h2{font:600 19px Georgia,serif;margin:8px 0}.customer-price{font-weight:700;color:#a15d4f;font-size:18px;margin:12px 0 6px}.customer-chip{font-size:11px;letter-spacing:.5px;color:#9b7d6e;text-transform:uppercase}.customer-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f2e9e3;padding-top:12px;margin-top:12px;font-size:12px;color:#8a776b}.customer-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px}.customer-actions .button{width:100%;justify-content:center;text-align:center;cursor:pointer}.customer-quantity{display:flex;align-items:center;gap:8px;font-size:12px;color:#8a776b}.customer-quantity input{width:64px;padding:7px;border:1px solid #e6d9cf;border-radius:8px}.customer-empty{padding:50px;text-align:center;background:#fff;border:1px dashed #e4d5c9;border-radius:16px}.customer-logout{border:0;background:none;color:#8b6254;cursor:pointer}.customer-welcome{font-size:14px;color:#88776e}@media(max-width:700px){.customer-title{display:block}.customer-search{margin-top:18px}.customer-header{align-items:flex-start}.customer-nav{justify-content:flex-end}}
+
+.customer-grid {
+  align-items: stretch;
+}
+
+
+/* Căn đều nội dung các thẻ sản phẩm */
+.customer-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.customer-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.customer-card h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.4;
+  height: 2.8em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  margin: 8px 0;
+  font-family: Arial, "DejaVu Sans", sans-serif;
+}
+
+.customer-card-body > .customer-muted {
+  min-height: 1.55em;
+  margin: 0;
+}
+
+.customer-price {
+  margin: 12px 0 6px;
+  min-height: 28px;
+}
+
+.customer-footer {
+  min-height: 28px;
+  box-sizing: border-box;
+}
+
+.customer-actions {
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customer-quantity {
+  min-height: 38px;
+}
+
+.customer-actions .button {
+  width: 100%;
+  min-height: 44px;
+}
+
+.customer-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.customer-image {
+  flex: 0 0 210px;
+  height: 210px;
+}
+
+.customer-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.customer-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.customer-card h2 {
+  line-height: 1.4;
+  height: 2.8em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  margin: 8px 0;
+}
+
+.customer-card-body > .customer-muted {
+  min-height: 1.55em;
+  margin-bottom: 0;
+}
+
+.customer-price {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.customer-actions {
+  margin-top: 14px;
+}
+
+.customer-actions .button {
+  min-height: 44px;
+}
+
+.customer-quantity {
+  min-height: 38px;
+}
+
+.customer-quantity input {
+  box-sizing: border-box;
+  height: 38px;
+}
+
+</style>
+<div class="customer-wrap">
+<header class="customer-header"><a class="customer-brand" href="/shop">Lumière <small>CUSTOMER BEAUTY SPACE</small></a><nav class="customer-nav"><span class="customer-welcome">Xin chào, <strong><%= currentUser.fullName %></strong></span><a href="/shop">Sản phẩm</a><a href="/my-orders">Đơn hàng của tôi</a><form action="/logout" method="post"><button class="customer-logout" type="submit">Đăng xuất</button></form></nav></header>
+<main class="customer-main"><%- include('../partials/flash') %><div class="customer-title"><div><p class="eyebrow">LUMIÈRE COLLECTION</p><h1>Sản phẩm dành cho bạn</h1><p class="customer-muted">Khám phá các sản phẩm mỹ phẩm đang kinh doanh.</p></div><form class="customer-search" method="get" action="/shop"><input type="search" name="q" value="<%= search %>" placeholder="Tìm sản phẩm, nhãn hàng..."><button class="button button-primary" type="submit">Tìm</button></form></div>
+<% if (!products.length) { %><div class="customer-empty"><h2>Chưa tìm thấy sản phẩm</h2><p class="customer-muted">Thử từ khóa khác nhé.</p></div><% } else { %><div class="customer-grid"><% products.forEach((product) => { %><article class="customer-card"><div class="customer-image"><% if (product.image_file_id) { %><img src="/shop/images/<%= product.image_file_id %>" alt="Ảnh <%= product.name %>" loading="lazy"><% } else { %><i class="bi bi-droplet" style="font-size:44px"></i><% } %></div><div class="customer-card-body"><span class="customer-chip"><%= product.brand_name || product.category_name %></span><h2><%= product.name.normalize('NFC') %></h2><p class="customer-muted"><%= product.volume_label || product.unit || 'Mỹ phẩm' %></p><div class="customer-price"><%= money(product.sale_price) %></div><div class="customer-footer"><span><%= product.category_name %></span><span><%= product.stock > 0 ? 'Còn hàng (' + product.stock + ')' : 'Hết hàng' %></span></div>
+<% if (product.stock > 0) { %><form class="customer-actions" action="/my-orders/buy-now" method="post"><input type="hidden" name="product_id" value="<%= product.id %>"><label class="customer-quantity">Số lượng <input type="number" name="quantity" value="1" min="1" max="99" required></label><button class="button button-primary" type="submit">Mua ngay</button></form><% } else { %><div class="customer-actions"><button class="button" type="button" disabled>Hết hàng</button></div><% } %></div></article><% }) %></div><% } %>
+</main></div></body></html>

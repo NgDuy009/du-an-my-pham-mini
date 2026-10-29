@@ -1,0 +1,13 @@
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type === 'success' ? 'success' : 'danger' %>" role="status" data-dismissible>
+    <i class="bi <%= flash.type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle' %>">
+</i>
+<span>
+<%= flash.message %>
+</span>
+    <button type="button" class="alert-close" aria-label="Đóng thông báo" data-dismiss>
+<i class="bi bi-x">
+</i>
+</button>
+  </div>
+<% } %>

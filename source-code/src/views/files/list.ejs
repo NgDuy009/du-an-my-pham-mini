@@ -1,0 +1,103 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">OBJECT STORAGE</p>
+<h1>Kho tệp MinIO</h1>
+<p class="muted">Tệp được lưu trong Object Storage; PostgreSQL chỉ lưu metadata.</p>
+</div>
+<a class="button button-primary" href="/files/upload">
+<i class="bi bi-cloud-arrow-up">
+</i> Tải tệp lên</a>
+</section>
+<div class="storage-banner">
+<span class="storage-banner-icon">
+<i class="bi bi-cloud-check">
+</i>
+</span>
+<div>
+<strong>MinIO Object Storage</strong>
+<p>Bucket: <code>
+<%= process.env.MINIO_BUCKET || 'cosmetic-files' %>
+</code> · Giới hạn mỗi tệp: <%= process.env.MAX_UPLOAD_MB || 5 %> MB</p>
+</div>
+<a href="http://localhost:9001" target="_blank" rel="noreferrer" class="text-link">Mở Console <i class="bi bi-box-arrow-up-right">
+</i>
+</a>
+</div>
+<section class="panel list-panel">
+<div class="list-toolbar">
+<div>
+<h2 class="toolbar-title">Tệp đã tải lên</h2>
+<p class="muted">Chọn xem hoặc tải xuống để kiểm tra khả năng truy xuất.</p>
+</div>
+<span class="result-count">
+<strong>
+<%= files.length %>
+</strong> tệp</span>
+</div>
+<% if (!files.length) { %>
+<div class="empty-state">
+<span class="empty-icon">
+<i class="bi bi-cloud-upload">
+</i>
+</span>
+<strong>Chưa có tệp</strong>
+<p>Tải ảnh sản phẩm, PDF hoặc DOCX để bắt đầu.</p>
+<a class="button button-primary" href="/files/upload">Tải tệp đầu tiên</a>
+</div>
+<% } else { %>
+<div class="file-grid">
+<% files.forEach((file) => { const imageFile = file.content_type.startsWith('image/'); %>
+<article class="file-card">
+<div class="file-preview <%= imageFile ? 'file-preview-image' : '' %>">
+<% if (imageFile) { %>
+<img src="/files/<%= file.id %>/view" alt="<%= file.original_name %>" loading="lazy">
+<% } else { %>
+<i class="bi <%= file.content_type.includes('pdf') ? 'bi-file-earmark-pdf' : 'bi-file-earmark-word' %>">
+</i>
+<% } %>
+</div>
+<div class="file-card-body">
+<strong title="<%= file.original_name %>">
+<%= file.original_name %>
+</strong>
+<small>
+<%= (file.file_size/1024).toFixed(1) %> KB · <%= file.content_type %>
+</small>
+<small>
+<%= file.uploader || 'Tài khoản đã xóa' %> · <%= dateTime(file.created_at) %>
+</small>
+<div class="file-actions">
+<a class="button button-secondary button-small" href="/files/<%= file.id %>/view" target="_blank">
+<i class="bi bi-eye">
+</i> Xem</a>
+<a class="button button-primary button-small" href="/files/<%= file.id %>/download">
+<i class="bi bi-download">
+</i> Tải</a>
+</div>
+</div>
+</article>
+<% }) %>
+</div>
+<% } %>
+<div class="panel-footer">
+<span>File content nằm trong MinIO volume.</span>
+<span>
+<i class="bi bi-database-check">
+</i> Metadata nằm trong PostgreSQL</span>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

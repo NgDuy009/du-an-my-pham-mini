@@ -1,0 +1,118 @@
+<%- include('../partials/head', { title }) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">CATALOG MANAGEMENT</p>
+<h1>
+<%= title %>
+</h1>
+<p class="muted">Nhập thông tin rõ ràng để dữ liệu được đồng bộ trong hệ thống.</p>
+</div>
+<a class="button button-secondary" href="/<%= resourceName %>">
+<i class="bi bi-arrow-left">
+</i> Quay lại</a>
+</section>
+<div class="form-layout">
+<section class="panel form-panel">
+<form method="post" action="/<%= resourceName %><%= row.id ? '/'+row.id : '' %>" class="form-stack" <%= resourceName === 'products' ? 'enctype="multipart/form-data"' : '' %>>
+<div class="form-section-title">
+<span class="section-number">01</span>
+<div>
+<h2>Thông tin cơ bản</h2>
+<p>Các trường có dấu * là bắt buộc.</p>
+</div>
+</div>
+<div class="field-grid">
+<% definition.fields.forEach((field) => { %>
+<div class="field <%= field.type === 'textarea' ? 'field-full' : '' %>">
+<label for="<%= field.name %>">
+<%= field.label %>
+<% if (field.required) { %>
+<span class="required-mark">*</span>
+<% } %>
+</label>
+<% if (field.type === 'textarea') { %>
+<textarea id="<%= field.name %>" name="<%= field.name %>" rows="3" maxlength="2000" <%= field.required ? 'required' : '' %>>
+<%= row[field.name] ?? '' %>
+</textarea>
+<% } else if (field.type === 'select') { %>
+<select id="<%= field.name %>" name="<%= field.name %>" <%= field.required ? 'required' : '' %>>
+<option value="">-- Chọn <%= field.label.toLowerCase() %> --</option>
+<% (options[field.name] || []).forEach((option) => { %>
+<option value="<%= option.id %>" <%= String(row[field.name] || '') === String(option.id) ? 'selected' : '' %>>
+<%= option.name %>
+</option>
+<% }) %>
+</select>
+<% } else { %>
+<input id="<%= field.name %>" name="<%= field.name %>" type="<%= field.type === 'number' ? 'number' : field.type === 'email' ? 'email' : field.type === 'date' ? 'date' : 'text' %>" value="<%= row[field.name] ?? '' %>" <%= field.required ? 'required' : '' %> <%= field.max ? `maxlength="${field.max}"` : '' %> <%= field.type === 'number' ? `min="${field.min ?? 0}" step="${field.name.includes('price') ? '1000' : '1'}"` : '' %> placeholder="Nhập <%= field.label.toLowerCase() %>">
+<% } %>
+<% const fieldError = errors.find((error) => error.field === field.name); if (fieldError) { %>
+<small class="field-error">
+<%= fieldError.message %>
+</small>
+<% } %>
+</div>
+<% }) %>
+</div>
+<% if (resourceName === 'products') { %>
+<div class="product-image-editor">
+  <div class="form-section-title">
+    <span class="section-number">02</span>
+    <div><h2>Hình ảnh sản phẩm</h2><p>Ảnh JPG, PNG hoặc WEBP, tối đa <%= process.env.MAX_UPLOAD_MB || 5 %> MB.</p></div>
+  </div>
+  <% if (row.image_file_id) { %>
+    <div class="current-product-image"><img src="/files/<%= row.image_file_id %>/view" alt="Ảnh sản phẩm hiện tại"><span>Ảnh hiện tại · tải ảnh mới để thay thế hiển thị</span></div>
+  <% } %>
+  <div class="field">
+    <label for="product_image">Chọn ảnh từ máy tính</label>
+    <input id="product_image" name="product_image" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+    <small class="muted">Ảnh được lưu trong MinIO Object Storage; metadata được lưu trong PostgreSQL.</small>
+  </div>
+  <div class="product-image-preview" data-product-image-preview hidden><img alt="Xem trước ảnh sản phẩm"></div>
+</div>
+<% } %>
+<div class="form-actions">
+<a class="button button-secondary" href="/<%= resourceName %>">Hủy</a>
+<button class="button button-primary" type="submit">
+<i class="bi bi-check2">
+</i> <%= row.id ? 'Lưu thay đổi' : 'Tạo mới' %>
+</button>
+</div>
+</form>
+</section>
+<aside class="form-aside">
+<div class="aside-card">
+<span class="aside-icon">
+<i class="bi bi-lightbulb">
+</i>
+</span>
+<h3>Mẹo nhập liệu</h3>
+<p>Dùng mã riêng biệt cho từng bản ghi. Mã SKU hoặc mã danh mục không được trùng nhau.</p>
+<div class="aside-divider">
+</div>
+<p>
+<i class="bi bi-database-check">
+</i> Dữ liệu được kiểm tra ở cả giao diện và máy chủ.</p>
+</div>
+<div class="aside-card soft-card">
+<i class="bi bi-shield-lock aside-large-icon">
+</i>
+<h3>An toàn dữ liệu</h3>
+<p>Các thay đổi sẽ được lưu trực tiếp vào cơ sở dữ liệu PostgreSQL.</p>
+</div>
+</aside>
+</div>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

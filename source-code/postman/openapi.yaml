@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Cosmetic Mini Management API
+  version: 1.0.0
+  description: REST API của hệ thống quản lý cửa hàng mỹ phẩm mini. API yêu cầu cookie session sau khi đăng nhập qua giao diện.
+servers:
+  - url: http://localhost:3000/api
+paths:
+  /dashboard:
+    get:
+      summary: Thống kê nhanh cho dashboard
+      responses:
+        '200': { description: Thống kê tổng quan }
+        '401': { description: Chưa đăng nhập }
+  /products:
+    get:
+      summary: Danh sách sản phẩm
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        '200': { description: Danh sách và phân trang }
+        '401': { description: Chưa đăng nhập }
+    post:
+      summary: Tạo sản phẩm (Administrator)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sku, name, category_id, unit, cost_price, sale_price, reorder_level]
+              properties:
+                sku: { type: string, example: SER-100 }
+                name: { type: string, example: Serum cấp ẩm }
+                category_id: { type: integer, example: 1 }
+                brand_id: { type: integer, nullable: true }
+                supplier_id: { type: integer, nullable: true }
+                unit: { type: string, example: sản phẩm }
+                cost_price: { type: number, example: 120000 }
+                sale_price: { type: number, example: 159000 }
+                reorder_level: { type: integer, example: 5 }
+      responses:
+        '201': { description: Đã tạo }
+        '400': { description: Dữ liệu không hợp lệ }
+        '403': { description: Không có quyền }
+  /products/{id}:
+    get:
+      summary: Chi tiết sản phẩm
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Chi tiết }
+        '404': { description: Không tìm thấy }
+    put:
+      summary: Cập nhật sản phẩm (Administrator)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { name: { type: string }, sale_price: { type: number } } }
+      responses:
+        '200': { description: Đã cập nhật }
+        '404': { description: Không tìm thấy }
+    delete:
+      summary: Xóa sản phẩm (Administrator)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204': { description: Đã xóa }
+        '403': { description: Không có quyền }
+  /categories:
+    get: { summary: Danh sách danh mục, responses: { '200': { description: Danh sách } } }
+  /brands:
+    get: { summary: Danh sách nhãn hàng, responses: { '200': { description: Danh sách } } }
+  /suppliers:
+    get: { summary: Danh sách nhà cung cấp, responses: { '200': { description: Danh sách } } }
+  /customers:
+    get: { summary: Danh sách khách hàng, responses: { '200': { description: Danh sách } } }

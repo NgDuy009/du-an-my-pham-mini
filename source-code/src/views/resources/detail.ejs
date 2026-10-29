@@ -1,0 +1,65 @@
+<%- include('../partials/head', { title }) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">RECORD DETAILS</p>
+<h1>
+<%= title %>
+</h1>
+<p class="muted">Thông tin chi tiết của bản ghi trong hệ thống.</p>
+</div>
+<div class="heading-actions">
+<a class="button button-secondary" href="/<%= resourceName %>">
+<i class="bi bi-arrow-left">
+</i> Danh sách</a>
+<% if (!definition.adminWrite || currentUser.role === 'ADMIN') { %>
+<a class="button button-primary" href="/<%= resourceName %>/<%= row.id %>/edit">
+<i class="bi bi-pencil">
+</i> Chỉnh sửa</a>
+<% } %>
+</div>
+</section>
+<section class="panel detail-panel">
+<% if (resourceName === 'products' && row.image_file_id) { %><div class="product-detail-image-wrap"><img class="product-detail-image" src="/files/<%= row.image_file_id %>/view" alt="Ảnh <%= row.name %>"></div><% } %>
+<div class="detail-banner">
+<span class="detail-avatar">
+<i class="bi bi-card-list">
+</i>
+</span>
+<div>
+<span class="code-chip">
+<%= row.sku || row.code || `#${row.id}` %>
+</span>
+<h2>
+<%= row.name || row.full_name || row.batch_code || 'Thông tin bản ghi' %>
+</h2>
+<p>Tạo lúc <%= dateTime(row.created_at) %>
+</p>
+</div>
+</div>
+<div class="detail-grid">
+<% Object.entries(row).filter(([key]) => !['id','password_hash','updated_at'].includes(key)).forEach(([key,value]) => { %>
+<div class="detail-item">
+<span>
+<%= key.replaceAll('_',' ').replace(/\b\w/g, (c) => c.toUpperCase()) %>
+</span>
+<strong>
+<%= value === null || value === '' ? '—' : (key.includes('price') ? money(value) : key.endsWith('_at') || key.endsWith('_on') ? dateTime(value) : value) %>
+</strong>
+</div>
+<% }) %>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

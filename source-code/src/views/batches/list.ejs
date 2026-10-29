@@ -1,0 +1,124 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">INVENTORY CONTROL</p>
+<h1>Lô hàng & hạn sử dụng</h1>
+<p class="muted">Theo dõi nhập kho theo lô, số lượng còn lại và hạn dùng sản phẩm.</p>
+</div>
+<% if (currentUser.role === 'ADMIN') { %>
+<a class="button button-primary" href="/batches/new">
+<i class="bi bi-plus-lg">
+</i> Nhập lô hàng</a>
+<% } %>
+</section>
+<section class="panel list-panel">
+<div class="list-toolbar">
+<form method="get" class="search-form">
+<i class="bi bi-search">
+</i>
+<input name="q" type="search" value="<%= search %>" placeholder="Tên sản phẩm, SKU hoặc mã lô">
+<button class="button button-secondary button-small">Tìm kiếm</button>
+</form>
+<span class="result-count">
+<strong>
+<%= batches.length %>
+</strong> lô hàng</span>
+</div>
+<div class="table-responsive">
+<table class="data-table">
+<thead>
+<tr>
+<th>MÃ LÔ</th>
+<th>SẢN PHẨM</th>
+<th>NHÀ CUNG CẤP</th>
+<th>NGÀY NHẬP</th>
+<th>HẠN SỬ DỤNG</th>
+<th>SL CÒN</th>
+<th>GIÁ NHẬP</th>
+<th>
+</th>
+</tr>
+</thead>
+<tbody>
+<% batches.forEach((batch) => { const daysLeft = batch.expires_on ? Math.ceil((new Date(batch.expires_on)-new Date())/86400000) : null; %>
+<tr>
+<td>
+<a class="cell-link" href="/batches/<%= batch.id %>">
+<%= batch.batch_code %>
+</a>
+</td>
+<td>
+<strong>
+<%= batch.product_name %>
+</strong>
+<small class="table-subline">
+<%= batch.sku %>
+</small>
+</td>
+<td>
+<%= batch.supplier_name || '—' %>
+</td>
+<td>
+<%= date(batch.received_on) %>
+</td>
+<td>
+<% if (daysLeft !== null && daysLeft < 0) { %>
+<span class="status status-danger">Đã hết hạn</span>
+<small class="table-subline">
+<%= date(batch.expires_on) %>
+</small>
+<% } else if (daysLeft !== null && daysLeft <= 90) { %>
+<span class="status status-warning">Còn <%= daysLeft %> ngày</span>
+<small class="table-subline">
+<%= date(batch.expires_on) %>
+</small>
+<% } else { %>
+<%= date(batch.expires_on) %>
+<% } %>
+</td>
+<td>
+<span class="stock-badge <%= batch.quantity_remaining <= 5 ? 'stock-low' : 'stock-ok' %>">
+<%= batch.quantity_remaining %>
+</span>
+</td>
+<td>
+<%= money(batch.unit_cost) %>
+</td>
+<td>
+<a class="row-action" href="/batches/<%= batch.id %>">
+<i class="bi bi-arrow-up-right">
+</i>
+</a>
+</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+</div>
+<% if (!batches.length) { %>
+<div class="empty-state">
+<strong>Chưa có lô hàng</strong>
+<p>Nhập lô hàng để bắt đầu quản lý tồn kho.</p>
+</div>
+<% } %>
+<div class="panel-footer">
+<span>Ưu tiên xuất lô có hạn dùng gần hơn (FEFO).</span>
+<span>
+<i class="bi bi-database-check">
+</i> Theo dõi lịch sử biến động kho</span>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

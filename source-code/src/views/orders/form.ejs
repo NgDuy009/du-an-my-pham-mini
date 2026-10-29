@@ -1,0 +1,123 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">SALES & CHECKOUT</p>
+<h1>Tạo đơn hàng</h1>
+<p class="muted">Chọn sản phẩm và số lượng. Tồn kho được trừ trong cùng giao dịch SQL.</p>
+</div>
+<a class="button button-secondary" href="/orders">
+<i class="bi bi-arrow-left">
+</i> Quay lại</a>
+</section>
+<form method="post" action="/orders" data-order-form>
+<div class="checkout-grid">
+<section class="panel form-panel">
+<div class="form-section-title">
+<span class="section-number">01</span>
+<div>
+<h2>Sản phẩm</h2>
+<p>Thêm các mặt hàng vào đơn hàng.</p>
+</div>
+</div>
+<div class="field">
+<label for="product-picker">Chọn sản phẩm</label>
+<select id="product-picker">
+<option value="">-- Chọn sản phẩm --</option>
+<% products.forEach((product) => { %>
+<option value="<%= product.id %>" data-sku="<%= product.sku %>" data-price="<%= product.sale_price %>" data-stock="<%= product.stock %>" <%= product.stock <= 0 ? 'disabled' : '' %>>
+<%= product.name %> · <%= money(product.sale_price) %> · Tồn <%= product.stock %>
+</option>
+<% }) %>
+</select>
+</div>
+<button class="button button-secondary" type="button" data-add-product>
+<i class="bi bi-plus-lg">
+</i> Thêm vào đơn</button>
+<div class="table-responsive order-items-wrap">
+<table class="data-table">
+<thead>
+<tr>
+<th>SẢN PHẨM</th>
+<th>ĐƠN GIÁ</th>
+<th>SỐ LƯỢNG</th>
+<th>TẠM TÍNH</th>
+<th>
+</th>
+</tr>
+</thead>
+<tbody data-order-items>
+<tr data-empty-row>
+<td colspan="5" class="muted">Chưa có sản phẩm trong đơn hàng.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="field">
+<label for="note">Ghi chú đơn hàng</label>
+<textarea name="note" id="note" rows="2" placeholder="Ghi chú (nếu có)">
+</textarea>
+</div>
+</section>
+<aside class="panel checkout-summary">
+<div class="form-section-title">
+<span class="section-number">02</span>
+<div>
+<h2>Thanh toán</h2>
+<p>Kiểm tra thông tin trước khi lưu.</p>
+</div>
+</div>
+<div class="field">
+<label for="customer_id">Khách hàng</label>
+<select name="customer_id" id="customer_id">
+<option value="">Khách lẻ</option>
+<% customers.forEach((customer) => { %>
+<option value="<%= customer.id %>">
+<%= customer.full_name %> · <%= customer.phone || customer.code %>
+</option>
+<% }) %>
+</select>
+</div>
+<div class="field">
+<label for="payment_method">Phương thức thanh toán</label>
+<select name="payment_method" id="payment_method">
+<option value="CASH">Tiền mặt</option>
+<option value="BANK_TRANSFER">Chuyển khoản</option>
+<option value="CARD">Thẻ</option>
+<option value="OTHER">Khác</option>
+</select>
+</div>
+<div class="summary-line">
+<span>Số mặt hàng</span>
+<strong data-item-count>0</strong>
+</div>
+<div class="summary-line">
+<span>Tạm tính</span>
+<strong data-subtotal>0 ₫</strong>
+</div>
+<div class="summary-total">
+<span>Tổng thanh toán</span>
+<strong data-total>0 ₫</strong>
+</div>
+<button class="button button-primary button-wide" type="submit" data-submit-order disabled>
+<i class="bi bi-check2-circle">
+</i> Hoàn tất đơn hàng</button>
+<p class="form-footnote">
+<i class="bi bi-shield-check">
+</i> Hệ thống khóa lô hàng khi trừ kho để tránh bán vượt tồn.</p>
+</aside>
+</div>
+</form>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+flowchart LR
+    Admin([Administrator])
+    Staff([Staff / Nhân viên])
+    Login([Đăng nhập / Đăng xuất])
+    Catalog([Quản lý sản phẩm, danh mục, nhãn hàng])
+    Suppliers([Quản lý nhà cung cấp])
+    Customers([Quản lý khách hàng])
+    Stock([Nhập lô, theo dõi hạn dùng, điều chỉnh tồn])
+    Sales([Tạo đơn, cập nhật tồn, in hóa đơn])
+    Files([Upload / xem / tải tệp MinIO])
+    Reports([Xem báo cáo / xuất CSV])
+    Users([Quản lý tài khoản và vai trò])
+    API([REST API / Swagger])
+    Admin --> Login
+    Staff --> Login
+    Admin --> Catalog
+    Staff --> Catalog
+    Admin --> Suppliers
+    Staff --> Suppliers
+    Admin --> Customers
+    Staff --> Customers
+    Admin --> Stock
+    Staff --> Stock
+    Admin --> Sales
+    Staff --> Sales
+    Admin --> Files
+    Staff --> Files
+    Admin --> Reports
+    Staff --> Reports
+    Admin --> Users
+    Admin --> API
+    Staff --> API

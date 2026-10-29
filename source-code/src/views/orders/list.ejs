@@ -1,0 +1,101 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">SALES & CHECKOUT</p>
+<h1>Đơn hàng</h1>
+<p class="muted">Theo dõi giao dịch, chi tiết đơn và hóa đơn bán hàng.</p>
+</div>
+<a class="button button-primary" href="/orders/new">
+<i class="bi bi-plus-lg">
+</i> Tạo đơn hàng</a>
+</section>
+<section class="panel list-panel">
+<div class="list-toolbar">
+<form method="get" class="search-form">
+<i class="bi bi-search">
+</i>
+<input type="search" name="q" value="<%= search %>" placeholder="Tìm mã đơn hoặc khách hàng">
+<button class="button button-secondary button-small">Tìm kiếm</button>
+</form>
+<span class="result-count">
+<strong>
+<%= orders.length %>
+</strong> đơn hàng</span>
+</div>
+<div class="table-responsive">
+<table class="data-table">
+<thead>
+<tr>
+<th>MÃ ĐƠN</th>
+<th>KHÁCH HÀNG</th>
+<th>NHÂN VIÊN</th>
+<th>NGÀY TẠO</th>
+<th>TỔNG CỘNG</th>
+<th>TRẠNG THÁI</th>
+<th>
+</th>
+</tr>
+</thead>
+<tbody>
+<% orders.forEach((order) => { %>
+<tr>
+<td>
+<a class="cell-link" href="/orders/<%= order.id %>">
+<%= order.order_code %>
+</a>
+</td>
+<td>
+<%= order.customer_name || 'Khách lẻ' %>
+</td>
+<td>
+<%= order.cashier_name || '—' %>
+</td>
+<td>
+<%= dateTime(order.created_at) %>
+</td>
+<td class="money-cell">
+<%= money(order.total_amount) %>
+</td>
+<td>
+<span class="status <%= order.status === 'COMPLETED' ? 'status-success' : order.status === 'CANCELLED' ? 'status-danger' : 'status-muted' %>">
+<%= ({COMPLETED:'Hoàn tất',DRAFT:'Nháp',CANCELLED:'Đã hủy',REFUNDED:'Đã hoàn tiền'})[order.status] %>
+</span>
+</td>
+<td>
+<a class="row-action" href="/orders/<%= order.id %>">
+<i class="bi bi-arrow-up-right">
+</i>
+</a>
+</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+</div>
+<% if (!orders.length) { %>
+<div class="empty-state">
+<strong>Chưa có đơn hàng phù hợp</strong>
+<p>Tạo đơn hàng đầu tiên hoặc thay đổi từ khóa.</p>
+</div>
+<% } %>
+<div class="panel-footer">
+<span>Hiển thị tối đa 200 đơn hàng gần nhất.</span>
+<span>
+<i class="bi bi-database-check">
+</i> PostgreSQL</span>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">INVENTORY CONTROL</p>
+<h1>Lô <%= batch.batch_code %>
+</h1>
+<p class="muted">
+<%= batch.product_name %> · <%= batch.sku %>
+</p>
+</div>
+<a class="button button-secondary" href="/batches">
+<i class="bi bi-arrow-left">
+</i> Danh sách lô</a>
+</section>
+<section class="panel detail-panel">
+<div class="detail-grid">
+<div class="detail-item">
+<span>Sản phẩm</span>
+<strong>
+<%= batch.product_name %>
+</strong>
+</div>
+<div class="detail-item">
+<span>Nhà cung cấp</span>
+<strong>
+<%= batch.supplier_name || '—' %>
+</strong>
+</div>
+<div class="detail-item">
+<span>Mã lô</span>
+<strong>
+<%= batch.batch_code %>
+</strong>
+</div>
+<div class="detail-item">
+<span>Ngày nhập</span>
+<strong>
+<%= date(batch.received_on) %>
+</strong>
+</div>
+<div class="detail-item">
+<span>Ngày sản xuất</span>
+<strong>
+<%= date(batch.manufactured_on) %>
+</strong>
+</div>
+<div class="detail-item">
+<span>Hạn sử dụng</span>
+<strong>
+<%= date(batch.expires_on) %>
+</strong>
+</div>
+<div class="detail-item">
+<span>Số lượng ban đầu</span>
+<strong>
+<%= batch.quantity_received %>
+</strong>
+</div>
+<div class="detail-item">
+<span>Số lượng còn lại</span>
+<strong class="stock-badge <%= batch.quantity_remaining <= 5 ? 'stock-low' : 'stock-ok' %>">
+<%= batch.quantity_remaining %>
+</strong>
+</div>
+<div class="detail-item">
+<span>Giá nhập</span>
+<strong>
+<%= money(batch.unit_cost) %>
+</strong>
+</div>
+</div>
+</section>
+<% if (currentUser.role === 'ADMIN') { %>
+<section class="panel form-panel adjustment-panel">
+<h2>Điều chỉnh tồn kho</h2>
+<p class="muted">Ghi số lượng thay đổi: số dương để cộng, số âm để trừ. Bắt buộc ghi lý do.</p>
+<form method="post" action="/batches/<%= batch.id %>/adjust" class="adjustment-form">
+<div class="field">
+<label for="quantity_change">Số lượng thay đổi</label>
+<input type="number" id="quantity_change" name="quantity_change" required min="-1000000" max="1000000" value="1">
+</div>
+<div class="field">
+<label for="adjust-note">Lý do</label>
+<input id="adjust-note" name="note" required maxlength="500" placeholder="Kiểm kê thực tế...">
+</div>
+<button class="button button-primary">Lưu điều chỉnh</button>
+</form>
+</section>
+<% } %>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

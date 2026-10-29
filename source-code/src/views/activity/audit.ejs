@@ -1,0 +1,96 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">SECURITY & AUDIT</p>
+<h1>Nhật ký hoạt động</h1>
+<p class="muted">Theo dõi các thao tác quan trọng của người dùng trong hệ thống.</p>
+</div>
+</section>
+<section class="panel list-panel">
+<div class="list-toolbar">
+<form class="search-form" method="get">
+<i class="bi bi-search">
+</i>
+<input name="q" value="<%= search %>" placeholder="Tìm hành động, thực thể hoặc người dùng">
+<button class="button button-secondary button-small">Tìm kiếm</button>
+</form>
+<span class="result-count">
+<strong>
+<%= rows.length %>
+</strong> sự kiện</span>
+</div>
+<div class="table-responsive">
+<table class="data-table">
+<thead>
+<tr>
+<th>THỜI ĐIỂM</th>
+<th>NGƯỜI THỰC HIỆN</th>
+<th>HÀNH ĐỘNG</th>
+<th>THỰC THỂ</th>
+<th>ID</th>
+<th>CHI TIẾT</th>
+<th>IP</th>
+</tr>
+</thead>
+<tbody>
+<% rows.forEach((row) => { %>
+<tr>
+<td>
+<%= dateTime(row.created_at) %>
+</td>
+<td>
+<strong>
+<%= row.actor_name || 'Tài khoản không còn tồn tại' %>
+</strong>
+<small class="table-subline">
+<%= row.actor_email || '' %>
+</small>
+</td>
+<td>
+<span class="code-chip">
+<%= row.action %>
+</span>
+</td>
+<td>
+<%= row.entity_type || '—' %>
+</td>
+<td>
+<%= row.entity_id || '—' %>
+</td>
+<td class="audit-details">
+<%= JSON.stringify(row.details || {}) %>
+</td>
+<td>
+<%= row.ip_address || '—' %>
+</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+</div>
+<% if (!rows.length) { %>
+<div class="empty-state">
+<strong>Chưa có sự kiện phù hợp</strong>
+</div>
+<% } %>
+<div class="panel-footer">
+<span>Chỉ Administrator được xem nhật ký.</span>
+<span>
+<i class="bi bi-shield-check">
+</i> Audit trail</span>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

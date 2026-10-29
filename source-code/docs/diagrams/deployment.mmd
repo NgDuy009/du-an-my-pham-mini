@@ -1,0 +1,17 @@
+flowchart TB
+    Browser[Browser / người dùng<br/>http://localhost:3000]
+    subgraph Host[Máy cá nhân / Docker Desktop]
+      subgraph Network[Docker bridge network: cosmetic-network]
+        App[Application container<br/>Node.js + Express + EJS<br/>Port 3000]
+        DB[(PostgreSQL 16<br/>Port 5432 nội bộ)]
+        Minio[MinIO Object Storage<br/>API 9000 / Console 9001]
+        App -->|SQL / service DNS database:5432| DB
+        App -->|S3 API / service DNS minio:9000| Minio
+      end
+      DBVolume[(Named volume<br/>database-data)]
+      MinioVolume[(Named volume<br/>minio-data)]
+      DB --- DBVolume
+      Minio --- MinioVolume
+    end
+    Browser -->|HTTP :3000| App
+    Browser -->|Console :9001| Minio

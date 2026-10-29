@@ -1,0 +1,86 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">OBJECT STORAGE</p>
+<h1>Tải tệp lên MinIO</h1>
+<p class="muted">Chọn ảnh hoặc tài liệu để lưu trữ trong bucket của hệ thống.</p>
+</div>
+<a class="button button-secondary" href="/files">
+<i class="bi bi-arrow-left">
+</i> Quay lại</a>
+</section>
+<div class="form-layout">
+<section class="panel form-panel">
+<form method="post" action="/files" enctype="multipart/form-data" class="form-stack" data-upload-form>
+<div class="upload-dropzone" data-dropzone>
+<input type="file" id="file" name="file" required accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,image/jpeg,image/png,image/webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+<label for="file">
+<span class="upload-icon">
+<i class="bi bi-cloud-arrow-up">
+</i>
+</span>
+<strong>Kéo thả tệp vào đây</strong>
+<span>hoặc <u>chọn tệp từ máy tính</u>
+</span>
+<small>JPG, PNG, WEBP, PDF, DOCX · tối đa <%= process.env.MAX_UPLOAD_MB || 5 %> MB</small>
+</label>
+<p class="selected-file" data-file-name>Chưa chọn tệp</p>
+</div>
+<div class="field">
+<label for="entity_type">Loại dữ liệu liên quan</label>
+<select id="entity_type" name="entity_type">
+<option value="GENERAL">Tệp chung</option>
+<option value="PRODUCT">Ảnh / tài liệu sản phẩm</option>
+<option value="SUPPLIER">Tài liệu nhà cung cấp</option>
+<option value="CUSTOMER">Tài liệu khách hàng</option>
+</select>
+</div>
+<div class="field">
+<label for="entity_id">Sản phẩm liên quan (không bắt buộc)</label>
+<select id="entity_id" name="entity_id">
+<option value="">-- Không liên kết --</option>
+<% products.forEach((product) => { %>
+<option value="<%= product.id %>">
+<%= product.sku %> · <%= product.name %>
+</option>
+<% }) %>
+</select>
+</div>
+<div class="form-actions">
+<a class="button button-secondary" href="/files">Hủy</a>
+<button class="button button-primary">
+<i class="bi bi-cloud-upload">
+</i> Tải lên</button>
+</div>
+</form>
+</section>
+<aside class="form-aside">
+<div class="aside-card">
+<span class="aside-icon">
+<i class="bi bi-shield-check">
+</i>
+</span>
+<h3>Upload an toàn</h3>
+<p>Máy chủ kiểm tra phần mở rộng, MIME type và giới hạn dung lượng trước khi ghi file vào MinIO.</p>
+<div class="aside-divider">
+</div>
+<p>
+<i class="bi bi-database">
+</i> Database chỉ lưu tên gốc, object key, MIME type, dung lượng và liên kết thực thể.</p>
+</div>
+</aside>
+</div>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

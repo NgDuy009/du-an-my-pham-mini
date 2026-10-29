@@ -1,0 +1,26 @@
+{
+  "info": {
+    "_postman_id": "4e2d4b89-83bd-44bc-a36a-5d70b07c6f2e",
+    "name": "Cosmetic Mini Management API",
+    "description": "Bộ kiểm thử API cơ bản. Đăng nhập qua trình duyệt trước để nhận cookie session, hoặc cấu hình cookie trong Postman. URL mặc định http://localhost:3000.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{ "key": "baseUrl", "value": "http://localhost:3000" }, { "key": "productId", "value": "1" }],
+  "item": [
+    { "name": "Health check", "request": { "method": "GET", "url": "{{baseUrl}}/health" } },
+    { "name": "Dashboard API", "request": { "method": "GET", "url": "{{baseUrl}}/api/dashboard" } },
+    { "name": "Products", "item": [
+      { "name": "List products", "request": { "method": "GET", "url": "{{baseUrl}}/api/products?q=serum&page=1&limit=20" } },
+      { "name": "Product detail", "request": { "method": "GET", "url": "{{baseUrl}}/api/products/{{productId}}" } },
+      { "name": "Create product (Administrator)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"sku\": \"DEMO-API-001\",\n  \"name\": \"Serum API Demo\",\n  \"category_id\": 1,\n  \"brand_id\": 1,\n  \"supplier_id\": 1,\n  \"unit\": \"chai\",\n  \"cost_price\": 80000,\n  \"sale_price\": 120000,\n  \"reorder_level\": 5\n}" }, "url": "{{baseUrl}}/api/products" } },
+      { "name": "Update product (Administrator)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"sale_price\": 125000\n}" }, "url": "{{baseUrl}}/api/products/{{productId}}" } },
+      { "name": "Delete product (Administrator)", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/products/{{productId}}" } }
+    ] },
+    { "name": "Categories", "request": { "method": "GET", "url": "{{baseUrl}}/api/categories" } },
+    { "name": "Brands", "request": { "method": "GET", "url": "{{baseUrl}}/api/brands" } },
+    { "name": "Suppliers", "request": { "method": "GET", "url": "{{baseUrl}}/api/suppliers" } },
+    { "name": "Customers", "request": { "method": "GET", "url": "{{baseUrl}}/api/customers" } },
+    { "name": "Upload file (multipart)", "request": { "method": "POST", "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }, { "key": "entity_type", "value": "GENERAL", "type": "text" }] }, "url": "{{baseUrl}}/files/api/upload" } },
+    { "name": "OpenAPI / Swagger UI", "request": { "method": "GET", "url": "{{baseUrl}}/api-docs" } }
+  ]
+}

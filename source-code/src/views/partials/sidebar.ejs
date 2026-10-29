@@ -1,0 +1,101 @@
+<aside class="sidebar" id="sidebar">
+  <a class="brand-lockup" href="/">
+    <span class="brand-mark">
+<i class="bi bi-flower1">
+</i>
+</span>
+    <span>
+<strong>Lumière</strong>
+<small>COSMETIC MANAGEMENT</small>
+</span>
+  </a>
+  <div class="nav-caption">WORKSPACE</div>
+  <nav class="side-nav" aria-label="Điều hướng chính">
+    <a class="nav-link <%= currentPath === '/' ? 'active' : '' %>" href="/">
+<i class="bi bi-grid-1x2">
+</i>
+<span>Tổng quan</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/products') ? 'active' : '' %>" href="/products">
+<i class="bi bi-droplet">
+</i>
+<span>Sản phẩm</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/categories') ? 'active' : '' %>" href="/categories">
+<i class="bi bi-collection">
+</i>
+<span>Danh mục</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/brands') ? 'active' : '' %>" href="/brands">
+<i class="bi bi-stars">
+</i>
+<span>Nhãn hàng</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/suppliers') ? 'active' : '' %>" href="/suppliers">
+<i class="bi bi-box-seam">
+</i>
+<span>Nhà cung cấp</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/batches') ? 'active' : '' %>" href="/batches">
+<i class="bi bi-upc-scan">
+</i>
+<span>Lô hàng & hạn dùng</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/customers') ? 'active' : '' %>" href="/customers">
+<i class="bi bi-people">
+</i>
+<span>Khách hàng</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/orders') ? 'active' : '' %>" href="/orders">
+<i class="bi bi-receipt">
+</i>
+<span>Đơn hàng</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/files') ? 'active' : '' %>" href="/files">
+<i class="bi bi-cloud-arrow-up">
+</i>
+<span>Kho tệp MinIO</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/reports') ? 'active' : '' %>" href="/reports">
+<i class="bi bi-bar-chart-line">
+</i>
+<span>Báo cáo</span>
+</a>
+    <a class="nav-link <%= currentPath.startsWith('/stock-movements') ? 'active' : '' %>" href="/stock-movements">
+<i class="bi bi-arrow-left-right">
+</i>
+<span>Lịch sử tồn kho</span>
+</a>
+  </nav>
+  <% if (currentUser && currentUser.role === 'ADMIN') { %>
+    <div class="nav-caption nav-caption-spaced">ADMINISTRATION</div>
+    <nav class="side-nav">
+<a class="nav-link <%= currentPath.startsWith('/users') ? 'active' : '' %>" href="/users">
+<i class="bi bi-shield-lock">
+</i>
+<span>Tài khoản</span>
+</a>
+<a class="nav-link <%= currentPath.startsWith('/audit') ? 'active' : '' %>" href="/audit">
+<i class="bi bi-journal-text">
+</i>
+<span>Nhật ký hoạt động</span>
+</a>
+</nav>
+  <% } %>
+  <div class="sidebar-bottom">
+    <div class="storage-note">
+<span class="storage-icon">
+<i class="bi bi-cloud-check">
+</i>
+</span>
+<div>
+<strong>Cloud storage</strong>
+<small>MinIO · Connected</small>
+</div>
+<span class="status-dot">
+</span>
+</div>
+    <div class="sidebar-version">COSMETIC MINI <span>v1.0.0</span>
+</div>
+  </div>
+</aside>

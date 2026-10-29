@@ -1,0 +1,123 @@
+const express = require('express');
+const { body } = require('express-validator');
+const db = require('../config/database');
+const asyncHandler = require('../utils/async-handler');
+const { requireAuth, requireStaff, flash } = require('../middleware/auth');
+const { validateRequest } = require('../middleware/validation');
+const { transaction } = require('../config/database');
+const { badRequest, notFound } = require('../utils/errors');
+const audit = require('../services/audit-service');
+const router = express.Router();
+router.use(requireAuth);
+
+router.get('/', asyncHandler(async (req, res) => {
+  const q = String(req.query.q || '').trim().slice(0, 80);
+  const values = q ? [`%${q}%`] : [];
+  const where = q ? 'WHERE o.order_code ILIKE $1 OR c.full_name ILIKE $1' : '';
+  const orders = await db.query(`SELECT o.*, c.full_name AS customer_name, u.full_name AS cashier_name FROM orders o LEFT JOIN customers c ON c.id=o.customer_id LEFT JOIN users u ON u.id=o.created_by ${where} ORDER BY o.created_at DESC LIMIT 200`, values);
+  res.render('orders/list', { title: 'Đơn hàng', orders: orders.rows, search: q });
+}));
+router.get('/new', asyncHandler(async (req, res) => {
+  const [products, customers] = await Promise.all([
+    db.query(`SELECT p.id,p.sku,p.name,p.sale_price,COALESCE(SUM(b.quantity_remaining),0)::int AS stock FROM products p LEFT JOIN product_batches b ON b.product_id=p.id WHERE p.is_active=true GROUP BY p.id ORDER BY p.name`),
+    db.query('SELECT id,code,full_name,phone FROM customers ORDER BY full_name LIMIT 500')
+  ]);
+  res.render('orders/form', { title: 'Tạo đơn hàng', products: products.rows, customers: customers.rows });
+}));
+router.post('/',
+  body('items').isArray({ min: 1 }).withMessage('Đơn hàng phải có ít nhất một sản phẩm'),
+  body('payment_method').isIn(['CASH','BANK_TRANSFER','CARD','OTHER']).withMessage('Phương thức thanh toán không hợp lệ'),
+  validateRequest,
+  asyncHandler(async (req, res) => {
+    const items = req.body.items;
+    const customerId = req.body.customer_id || null;
+    const result = await transaction(async (client) => {
+      let subtotal = 0;
+      const prepared = [];
+      for (const item of items) {
+        const productId = Number(item.product_id);
+        const quantity = Number(item.quantity);
+        if (!Number.isInteger(productId) || productId < 1 || !Number.isInteger(quantity) || quantity < 1 || quantity > 10000) throw badRequest('Sản phẩm hoặc số lượng không hợp lệ.');
+        const productResult = await client.query('SELECT * FROM products WHERE id=$1 AND is_active=true FOR UPDATE', [productId]);
+        if (!productResult.rowCount) throw badRequest(`Sản phẩm #${productId} không tồn tại hoặc đã ngừng bán.`);
+        const product = productResult.rows[0];
+        let remaining = quantity;
+        const batchesResult = await client.query('SELECT * FROM product_batches WHERE product_id=$1 AND quantity_remaining>0 AND (expires_on IS NULL OR expires_on>=CURRENT_DATE) ORDER BY expires_on NULLS LAST, received_on, id FOR UPDATE', [productId]);
+        const allocations = [];
+        for (const batch of batchesResult.rows) {
+          if (remaining <= 0) break;
+          const allocated = Math.min(remaining, batch.quantity_remaining);
+          allocations.push({ batchId: batch.id, quantity: allocated, unitCost: Number(batch.unit_cost) });
+          remaining -= allocated;
+        }
+        if (remaining > 0) throw badRequest(`Sản phẩm ${product.name} không đủ tồn kho. Thiếu ${remaining} sản phẩm.`);
+        subtotal += Number(product.sale_price) * quantity;
+        prepared.push({ product, quantity, allocations });
+      }
+      const orderCode = `HD-${new Date().toISOString().slice(0,10).replaceAll('-','')}-${Date.now().toString().slice(-6)}`;
+      const orderResult = await client.query(`INSERT INTO orders(order_code,customer_id,created_by,status,subtotal,discount_amount,total_amount,payment_method,completed_at,note) VALUES($1,$2,$3,'DRAFT',$4,0,$4,$5,NULL,$6) RETURNING *`, [orderCode, customerId, req.session.user.id, subtotal, req.body.payment_method, req.body.note || null]);
+      const order = orderResult.rows[0];
+      for (const entry of prepared) {
+        for (const allocation of entry.allocations) {
+          await client.query('UPDATE product_batches SET quantity_remaining=quantity_remaining-$1 WHERE id=$2', [allocation.quantity, allocation.batchId]);
+          await client.query(`INSERT INTO order_items(order_id,product_id,batch_id,product_sku,product_name,quantity,unit_price,unit_cost) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, [order.id, entry.product.id, allocation.batchId, entry.product.sku, entry.product.name, allocation.quantity, entry.product.sale_price, allocation.unitCost]);
+          await client.query(`INSERT INTO stock_movements(product_id,batch_id,movement_type,quantity_change,reference_type,reference_id,created_by) VALUES($1,$2,'SALE',$3,'ORDER',$4,$5)`, [entry.product.id, allocation.batchId, -allocation.quantity, order.id, req.session.user.id]);
+        }
+      }
+      return order;
+    });
+    await audit.record({ userId: req.session.user.id, action: 'CREATE_ORDER', entityType: 'orders', entityId: result.id, details: { orderCode: result.order_code }, ip: req.ip });
+    flash(req, 'success', `Đã tạo đơn hàng ${result.order_code}.`);
+    res.redirect(`/orders/${result.id}`);
+  })
+);
+router.post(
+  '/:id(\\d+)/complete',
+  requireStaff,
+  asyncHandler(async (req, res) => {
+    const result = await db.query(
+      `UPDATE orders
+       SET status = 'COMPLETED',
+           completed_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $1
+         AND status = 'DRAFT'
+       RETURNING id, order_code`,
+      [req.params.id]
+    );
+
+    if (!result.rowCount) {
+      flash(
+        req,
+        'error',
+        'Không tìm thấy đơn hàng nháp hoặc đơn đã được xử lý.'
+      );
+      return res.redirect(`/orders/${req.params.id}`);
+    }
+
+    await audit.record({
+      userId: req.session.user.id,
+      action: 'COMPLETE_ORDER',
+      entityType: 'orders',
+      entityId: result.rows[0].id,
+      details: { orderCode: result.rows[0].order_code },
+      ip: req.ip
+    });
+
+    flash(req, 'success', 'Đơn hàng đã được hoàn thành.');
+    res.redirect(`/orders/${result.rows[0].id}`);
+  })
+);
+router.get('/:id(\\d+)', asyncHandler(async (req, res) => {
+  const orderResult = await db.query(`SELECT o.*, c.full_name AS customer_name, c.phone AS customer_phone, u.full_name AS cashier_name FROM orders o LEFT JOIN customers c ON c.id=o.customer_id LEFT JOIN users u ON u.id=o.created_by WHERE o.id=$1`, [req.params.id]);
+  if (!orderResult.rowCount) throw notFound('Không tìm thấy đơn hàng.');
+  const items = await db.query('SELECT * FROM order_items WHERE order_id=$1 ORDER BY id', [req.params.id]);
+  res.render('orders/detail', { title: `Đơn ${orderResult.rows[0].order_code}`, order: orderResult.rows[0], items: items.rows });
+}));
+router.get('/:id(\\d+)/receipt', asyncHandler(async (req, res) => {
+  const order = await db.query('SELECT * FROM orders WHERE id=$1', [req.params.id]);
+  if (!order.rowCount) throw notFound('Không tìm thấy đơn hàng.');
+  const items = await db.query('SELECT * FROM order_items WHERE order_id=$1', [req.params.id]);
+  res.render('orders/receipt', { title: 'Hóa đơn bán hàng', order: order.rows[0], items: items.rows, printMode: true });
+}));
+module.exports = router;

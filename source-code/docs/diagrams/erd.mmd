@@ -1,0 +1,29 @@
+erDiagram
+  USERS ||--o{ ORDERS : creates
+  USERS ||--o{ FILE_METADATA : uploads
+  USERS ||--o{ AUDIT_LOGS : triggers
+  CATEGORIES ||--o{ PRODUCTS : groups
+  BRANDS ||--o{ PRODUCTS : labels
+  SUPPLIERS ||--o{ PRODUCTS : supplies
+  PRODUCTS ||--o{ PRODUCT_BATCHES : stocked_as
+  SUPPLIERS ||--o{ PRODUCT_BATCHES : delivers
+  CUSTOMERS ||--o{ ORDERS : places
+  PROMOTIONS ||--o{ ORDERS : applies_to
+  ORDERS ||--|{ ORDER_ITEMS : contains
+  PRODUCTS ||--o{ ORDER_ITEMS : sold_as
+  PRODUCT_BATCHES ||--o{ ORDER_ITEMS : fulfilled_from
+  PRODUCTS ||--o{ STOCK_MOVEMENTS : tracked_by
+  PRODUCT_BATCHES ||--o{ STOCK_MOVEMENTS : records
+  USERS { bigint id PK string email UK string password_hash string role }
+  CATEGORIES { bigint id PK string code UK string name UK }
+  BRANDS { bigint id PK string code UK string name UK }
+  SUPPLIERS { bigint id PK string code UK string name }
+  PRODUCTS { bigint id PK string sku UK string name bigint category_id FK bigint brand_id FK bigint supplier_id FK numeric sale_price }
+  PRODUCT_BATCHES { bigint id PK bigint product_id FK bigint supplier_id FK string batch_code date expires_on int quantity_remaining }
+  CUSTOMERS { bigint id PK string code UK string full_name string phone }
+  PROMOTIONS { bigint id PK string code UK string discount_type numeric discount_value }
+  ORDERS { bigint id PK string order_code UK bigint customer_id FK bigint created_by FK numeric total_amount string status }
+  ORDER_ITEMS { bigint id PK bigint order_id FK bigint product_id FK bigint batch_id FK int quantity numeric unit_price }
+  STOCK_MOVEMENTS { bigint id PK bigint product_id FK bigint batch_id FK string movement_type int quantity_change }
+  FILE_METADATA { bigint id PK string original_name string object_key UK string content_type bigint entity_id }
+  AUDIT_LOGS { bigint id PK bigint user_id FK string action jsonb details }

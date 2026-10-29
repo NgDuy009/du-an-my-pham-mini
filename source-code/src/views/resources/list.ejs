@@ -1,0 +1,138 @@
+<%- include('../partials/head', { title }) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">CATALOG MANAGEMENT</p>
+<h1>
+<%= definition.title %>
+</h1>
+<p class="muted">Quản lý, tìm kiếm và cập nhật thông tin <%= definition.singular %>.</p>
+</div>
+<div class="heading-actions">
+<a class="button button-secondary" href="/<%= resourceName %>/export.csv<%= search ? `?q=${encodeURIComponent(search)}` : '' %>">
+<i class="bi bi-download">
+</i> CSV</a>
+<% if (!definition.adminWrite || currentUser.role === 'ADMIN') { %>
+<a class="button button-primary" href="/<%= resourceName %>/new">
+<i class="bi bi-plus-lg">
+</i> Thêm <%= definition.singular %>
+</a>
+<% } %>
+</div>
+</section>
+<section class="panel list-panel">
+<div class="list-toolbar">
+<form method="get" class="search-form">
+<i class="bi bi-search">
+</i>
+<input type="search" name="q" value="<%= search %>" placeholder="Tìm theo tên, mã hoặc từ khóa...">
+<button class="button button-secondary button-small" type="submit">Tìm kiếm</button>
+<% if (search) { %>
+<a class="clear-search" href="/<%= resourceName %>">Xóa lọc</a>
+<% } %>
+</form>
+<span class="result-count">
+<strong>
+<%= rows.length %>
+</strong> bản ghi</span>
+</div>
+<% if (!rows.length) { %>
+<div class="empty-state">
+<span class="empty-icon">
+<i class="bi bi-search">
+</i>
+</span>
+<strong>Không tìm thấy dữ liệu</strong>
+<p>Thử từ khóa khác hoặc tạo bản ghi mới.</p>
+</div>
+<% } else { %>
+<div class="table-responsive">
+<table class="data-table">
+<thead>
+<tr>
+<% definition.columns.forEach((column) => { %>
+<th>
+<%= column[1] %>
+</th>
+<% }) %>
+<th class="actions-heading">THAO TÁC</th>
+</tr>
+</thead>
+<tbody>
+<% rows.forEach((row) => { %>
+<tr>
+<% definition.columns.forEach((column) => { const value = row[column[0]]; %>
+<td>
+<% if (column[0] === 'image_file_id') { %>
+  <% if (value) { %><img class="product-list-image" src="/files/<%= value %>/view" alt="Ảnh <%= row.name %>" loading="lazy"><% } else { %><span class="product-list-image-placeholder"><i class="bi bi-image"></i></span><% } %>
+<% } else if (column[2] === 'money') { %>
+<span class="money-cell">
+<%= money(value) %>
+</span>
+<% } else if (column[0] === 'sku' || column[0] === 'code') { %>
+<span class="code-chip">
+<%= value ?? '—' %>
+</span>
+<% } else if (column[0] === 'name' || column[0] === 'full_name') { %>
+<strong class="table-primary-text">
+<%= value ?? '—' %>
+</strong>
+<% } else if (column[0] === 'stock') { %>
+<span class="stock-badge <%= Number(value) <= Number(row.reorder_level || 0) ? 'stock-low' : 'stock-ok' %>">
+<%= value ?? 0 %>
+</span>
+<% } else { %>
+<span class="table-secondary-text">
+<%= value ?? '—' %>
+</span>
+<% } %>
+</td>
+<% }) %>
+<td>
+<div class="row-actions">
+<a class="row-action" href="/<%= resourceName %>/<%= row.id %>" title="Chi tiết">
+<i class="bi bi-eye">
+</i>
+</a>
+<% if (!definition.adminWrite || currentUser.role === 'ADMIN') { %>
+<a class="row-action" href="/<%= resourceName %>/<%= row.id %>/edit" title="Chỉnh sửa">
+<i class="bi bi-pencil">
+</i>
+</a>
+<% if (currentUser.role === 'ADMIN') { %>
+<form method="post" action="/<%= resourceName %>/<%= row.id %>/delete" data-confirm="Bạn có chắc muốn xóa bản ghi này? Hành động này có thể bị từ chối nếu dữ liệu đang được sử dụng.">
+<button class="row-action danger-action" title="Xóa">
+<i class="bi bi-trash3">
+</i>
+</button>
+</form>
+<% } %>
+<% } %>
+</div>
+</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+</div>
+<% } %>
+<div class="panel-footer">
+<span>Hiển thị tối đa 200 bản ghi gần nhất.</span>
+<span>
+<i class="bi bi-shield-check">
+</i> Dữ liệu được lưu trong PostgreSQL</span>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

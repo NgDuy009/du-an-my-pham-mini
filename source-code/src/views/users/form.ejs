@@ -1,0 +1,55 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">ACCESS CONTROL</p>
+<h1>Tạo tài khoản</h1>
+<p class="muted">Tài khoản mới được tạo với mật khẩu đã băm bằng bcrypt.</p>
+</div>
+<a class="button button-secondary" href="/users">
+<i class="bi bi-arrow-left">
+</i> Quay lại</a>
+</section>
+<section class="panel form-panel narrow-form">
+<form method="post" action="/users" class="form-stack">
+<div class="field">
+<label for="full_name">Họ tên</label>
+<input id="full_name" name="full_name" required minlength="2" maxlength="120">
+</div>
+<div class="field">
+<label for="email">Email</label>
+<input id="email" name="email" type="email" required maxlength="180">
+</div>
+<div class="field">
+<label for="password">Mật khẩu tạm thời</label>
+<input id="password" name="password" type="password" minlength="10" required autocomplete="new-password">
+<small class="field-hint">Tối thiểu 10 ký tự. Không dùng mật khẩu thật của tài khoản cá nhân.</small>
+</div>
+<div class="field">
+<label for="role">Vai trò</label>
+<select id="role" name="role">
+<option value="STAFF">Staff — xem dữ liệu, bán hàng, nhập tệp</option>
+<option value="ADMIN">Administrator — toàn quyền</option>
+</select>
+</div>
+<div class="form-actions">
+<a class="button button-secondary" href="/users">Hủy</a>
+<button class="button button-primary">
+<i class="bi bi-person-plus">
+</i> Tạo tài khoản</button>
+</div>
+</form>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

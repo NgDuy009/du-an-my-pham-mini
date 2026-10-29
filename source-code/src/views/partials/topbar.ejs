@@ -1,0 +1,41 @@
+<header class="topbar">
+  <button class="icon-button mobile-menu" type="button" data-sidebar-toggle aria-label="Mở menu">
+<i class="bi bi-list">
+</i>
+</button>
+  <div class="breadcrumbs">
+<span>Workspace</span>
+<i class="bi bi-chevron-right">
+</i>
+<strong>
+<%= title %>
+</strong>
+</div>
+  <div class="topbar-actions">
+    <a class="icon-button" href="/api-docs" target="_blank" rel="noreferrer" title="Tài liệu API">
+<i class="bi bi-braces">
+</i>
+</a>
+    <span class="topbar-divider">
+</span>
+    <div class="user-menu">
+<span class="avatar">
+<%= initials(currentUser?.fullName || 'U') %>
+</span>
+<span class="user-identity">
+<strong>
+<%= currentUser?.fullName || 'Người dùng' %>
+</strong>
+<small>
+<%= ({ADMIN:'Administrator',STAFF:'Staff',CUSTOMER:'Khách hàng'})[currentUser?.role] || 'Người dùng' %>
+</small>
+</span>
+</div>
+    <form action="/logout" method="post">
+<button class="icon-button" title="Đăng xuất" aria-label="Đăng xuất">
+<i class="bi bi-box-arrow-right">
+</i>
+</button>
+</form>
+  </div>
+</header>

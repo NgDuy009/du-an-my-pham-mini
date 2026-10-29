@@ -1,0 +1,91 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">ACCESS CONTROL</p>
+<h1>Tài khoản nhân viên</h1>
+<p class="muted">Phân quyền Administrator và Staff. Mật khẩu được lưu dưới dạng bcrypt hash.</p>
+</div>
+<a class="button button-primary" href="/users/new">
+<i class="bi bi-person-plus">
+</i> Tạo tài khoản</a>
+</section>
+<section class="panel list-panel">
+<div class="table-responsive">
+<table class="data-table">
+<thead>
+<tr>
+<th>NHÂN VIÊN</th>
+<th>EMAIL</th>
+<th>VAI TRÒ</th>
+<th>TRẠNG THÁI</th>
+<th>ĐĂNG NHẬP GẦN NHẤT</th>
+<th>
+</th>
+</tr>
+</thead>
+<tbody>
+<% users.forEach((user) => { %>
+<tr>
+<td>
+<div class="user-table-cell">
+<span class="avatar">
+<%= initials(user.full_name) %>
+</span>
+<strong>
+<%= user.full_name %>
+</strong>
+</div>
+</td>
+<td>
+<%= user.email %>
+</td>
+<td>
+<span class="status <%= user.role === 'ADMIN' ? 'status-info' : 'status-muted' %>">
+<%= user.role === 'ADMIN' ? 'Administrator' : 'Staff' %>
+</span>
+</td>
+<td>
+<span class="status <%= user.is_active ? 'status-success' : 'status-danger' %>">
+<%= user.is_active ? 'Đang hoạt động' : 'Đã khóa' %>
+</span>
+</td>
+<td>
+<%= dateTime(user.last_login_at) %>
+</td>
+<td>
+<% if (Number(user.id) !== Number(currentUser.id)) { %>
+<form method="post" action="/users/<%= user.id %>/toggle" data-confirm="Bạn có chắc muốn <%= user.is_active ? 'khóa' : 'mở khóa' %> tài khoản này?">
+<button class="button button-secondary button-small">
+<%= user.is_active ? 'Khóa' : 'Mở khóa' %>
+</button>
+</form>
+<% } else { %>
+<span class="muted">Tài khoản của bạn</span>
+<% } %>
+</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+</div>
+<div class="panel-footer">
+<span>Chỉ Administrator có thể quản lý tài khoản.</span>
+<span>
+<i class="bi bi-shield-lock">
+</i> Phân quyền máy chủ</span>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

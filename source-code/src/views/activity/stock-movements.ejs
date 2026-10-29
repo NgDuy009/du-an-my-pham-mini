@@ -1,0 +1,97 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">INVENTORY CONTROL</p>
+<h1>Lịch sử biến động kho</h1>
+<p class="muted">Mỗi lần nhập, bán hoặc điều chỉnh đều được ghi lại.</p>
+</div>
+<a class="button button-secondary" href="/batches">
+<i class="bi bi-box-seam">
+</i> Quản lý lô hàng</a>
+</section>
+<section class="panel list-panel">
+<div class="list-toolbar">
+<form class="search-form" method="get">
+<i class="bi bi-search">
+</i>
+<input name="q" value="<%= search %>" placeholder="Tên sản phẩm, SKU hoặc loại biến động">
+<button class="button button-secondary button-small">Tìm kiếm</button>
+</form>
+<span class="result-count">
+<strong>
+<%= rows.length %>
+</strong> biến động</span>
+</div>
+<div class="table-responsive">
+<table class="data-table">
+<thead>
+<tr>
+<th>THỜI ĐIỂM</th>
+<th>SẢN PHẨM</th>
+<th>MÃ LÔ</th>
+<th>LOẠI</th>
+<th>THAY ĐỔI</th>
+<th>NGƯỜI THỰC HIỆN</th>
+<th>GHI CHÚ</th>
+</tr>
+</thead>
+<tbody>
+<% rows.forEach((row) => { %>
+<tr>
+<td>
+<%= dateTime(row.created_at) %>
+</td>
+<td>
+<strong>
+<%= row.product_name %>
+</strong>
+<small class="table-subline">
+<%= row.sku %>
+</small>
+</td>
+<td>
+<%= row.batch_code || '—' %>
+</td>
+<td>
+<span class="status <%= row.quantity_change > 0 ? 'status-success' : 'status-warning' %>">
+<%= ({OPENING:'Tồn đầu',RECEIPT:'Nhập kho',SALE:'Bán hàng',RETURN:'Trả hàng',ADJUSTMENT:'Điều chỉnh',EXPIRED:'Hết hạn'})[row.movement_type] || row.movement_type %>
+</span>
+</td>
+<td>
+<strong class="<%= row.quantity_change > 0 ? 'movement-positive' : 'movement-negative' %>">
+<%= row.quantity_change > 0 ? '+' : '' %>
+<%= row.quantity_change %>
+</strong>
+</td>
+<td>
+<%= row.actor_name || '—' %>
+</td>
+<td>
+<%= row.note || '—' %>
+</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+</div>
+<div class="panel-footer">
+<span>Nhật ký biến động hỗ trợ đối chiếu tồn kho.</span>
+<span>
+<i class="bi bi-database-check">
+</i> PostgreSQL</span>
+</div>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

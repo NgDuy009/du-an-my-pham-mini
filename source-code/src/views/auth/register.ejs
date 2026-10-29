@@ -1,0 +1,18 @@
+<%- include('../partials/head', { title }) %>
+<main class="login-page">
+  <div class="login-art"><div class="login-art-overlay"></div><div class="login-brand"><span class="brand-mark"><i class="bi bi-flower1"></i></span><span><strong>Lumière</strong><small>COSMETIC</small></span></div><div class="login-quote"><span class="quote-mark">“</span><h1>Beauty in every<br>detail.</h1><p>Một trải nghiệm chăm sóc sắc đẹp dành riêng cho bạn.</p></div><div class="login-art-footer">© <%= new Date().getFullYear() %> Lumière Cosmetic</div></div>
+  <div class="login-form-side"><div class="login-form-wrap">
+    <p class="eyebrow">JOIN LUMIÈRE</p><h2>Tạo tài khoản khách hàng</h2><p class="muted">Đăng ký để xem sản phẩm và theo dõi đơn hàng của bạn.</p>
+    <%- include('../partials/flash') %>
+    <form method="post" action="/register" class="form-stack">
+      <div class="field"><label for="full_name">Họ và tên *</label><input id="full_name" name="full_name" maxlength="140" required autocomplete="name" placeholder="Nguyễn Minh Anh"></div>
+      <div class="field"><label for="email">Email *</label><input id="email" name="email" type="email" maxlength="180" required autocomplete="email" placeholder="ban@example.com"></div>
+      <div class="field"><label for="phone">Số điện thoại</label><input id="phone" name="phone" maxlength="30" autocomplete="tel" placeholder="09xxxxxxxx"></div>
+      <div class="field"><label for="password">Mật khẩu * (ít nhất 10 ký tự)</label><input id="password" name="password" type="password" minlength="10" maxlength="100" required autocomplete="new-password"></div>
+      <div class="field"><label for="password_confirmation">Nhập lại mật khẩu *</label><input id="password_confirmation" name="password_confirmation" type="password" minlength="10" maxlength="100" required autocomplete="new-password"></div>
+      <button class="button button-primary button-wide" type="submit">Tạo tài khoản <i class="bi bi-arrow-right"></i></button>
+    </form>
+    <p style="margin-top:20px;text-align:center">Đã có tài khoản? <a href="/login">Đăng nhập</a></p>
+  </div></div>
+</main>
+<script src="/js/app.js" defer></script></body></html>

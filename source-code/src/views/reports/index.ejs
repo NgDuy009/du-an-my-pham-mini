@@ -1,0 +1,219 @@
+<%- include('../partials/head',{title}) %>
+<div class="app-shell">
+<%- include('../partials/sidebar') %>
+<main class="main-area">
+<%- include('../partials/topbar') %>
+<div class="page-content">
+<%- include('../partials/flash') %>
+<section class="page-heading">
+<div>
+<p class="eyebrow">BUSINESS INTELLIGENCE</p>
+<h1>Báo cáo & phân tích</h1>
+<p class="muted">Doanh thu, sản phẩm bán chạy, tồn kho thấp và lô sắp hết hạn.</p>
+</div>
+<a class="button button-secondary" href="/reports/sales.csv?from=<%= from %>&to=<%= to %>">
+<i class="bi bi-download">
+</i> Xuất CSV</a>
+</section>
+<section class="panel filter-panel">
+<form method="get" class="date-filter">
+<div class="field">
+<label for="from">Từ ngày</label>
+<input type="date" id="from" name="from" value="<%= from %>" required>
+</div>
+<div class="field">
+<label for="to">Đến ngày</label>
+<input type="date" id="to" name="to" value="<%= to %>" required>
+</div>
+<button class="button button-primary">
+<i class="bi bi-funnel">
+</i> Áp dụng</button>
+</form>
+</section>
+<section class="stat-grid report-stats">
+<article class="stat-card">
+<div class="stat-top">
+<span class="stat-icon icon-lilac">
+<i class="bi bi-currency-exchange">
+</i>
+</span>
+<span class="stat-label">Doanh thu</span>
+</div>
+<strong class="stat-value stat-money">
+<%= money(summary.revenue) %>
+</strong>
+<span class="stat-foot">Trong khoảng đã chọn</span>
+</article>
+<article class="stat-card">
+<div class="stat-top">
+<span class="stat-icon icon-green">
+<i class="bi bi-receipt">
+</i>
+</span>
+<span class="stat-label">Đơn hoàn tất</span>
+</div>
+<strong class="stat-value">
+<%= summary.order_count %>
+</strong>
+<span class="stat-foot">Đơn trong khoảng đã chọn</span>
+</article>
+<article class="stat-card">
+<div class="stat-top">
+<span class="stat-icon icon-peach">
+<i class="bi bi-box-seam">
+</i>
+</span>
+<span class="stat-label">SKU tồn thấp</span>
+</div>
+<strong class="stat-value">
+<%= lowStock.length %>
+</strong>
+<span class="stat-foot">Tại thời điểm hiện tại</span>
+</article>
+<article class="stat-card">
+<div class="stat-top">
+<span class="stat-icon icon-rose">
+<i class="bi bi-calendar2-x">
+</i>
+</span>
+<span class="stat-label">Lô gần hết hạn</span>
+</div>
+<strong class="stat-value">
+<%= expiring.length %>
+</strong>
+<span class="stat-foot">Trong 90 ngày tới</span>
+</article>
+</section>
+<section class="dashboard-grid">
+<article class="panel">
+<div class="panel-heading">
+<div>
+<h2>Doanh thu theo ngày</h2>
+<p>
+<%= from %> đến <%= to %>
+</p>
+</div>
+</div>
+<div class="daily-report-list">
+<% const maxDaily = Math.max(1,...daily.map((d)=>Number(d.revenue))); daily.forEach((item)=>{ %>
+<div class="daily-row">
+<span>
+<%= date(item.day) %>
+</span>
+<div class="daily-track">
+<span style="width:<%= Number(item.revenue)/maxDaily*100 %>%">
+</span>
+</div>
+<strong>
+<%= money(item.revenue) %>
+</strong>
+</div>
+<% }) %>
+<% if (!daily.length) { %>
+<p class="muted">Chưa có doanh thu trong khoảng ngày này.</p>
+<% } %>
+</div>
+</article>
+<article class="panel">
+<div class="panel-heading">
+<div>
+<h2>Sản phẩm bán chạy</h2>
+<p>Sắp xếp theo số lượng đã bán</p>
+</div>
+</div>
+<div class="rank-list">
+<% topProducts.forEach((item,index)=>{ %>
+<div class="rank-row">
+<span class="rank-number">
+<%= String(index+1).padStart(2,'0') %>
+</span>
+<span class="rank-name">
+<strong>
+<%= item.product_name %>
+</strong>
+<small>
+<%= item.quantity %> sản phẩm</small>
+</span>
+<strong>
+<%= money(item.revenue) %>
+</strong>
+</div>
+<% }) %>
+<% if (!topProducts.length) { %>
+<p class="muted">Chưa có dữ liệu bán hàng.</p>
+<% } %>
+</div>
+</article>
+</section>
+<section class="dashboard-grid report-bottom">
+<article class="panel">
+<div class="panel-heading">
+<div>
+<h2>Tồn kho dưới ngưỡng</h2>
+<p>Cần cân nhắc nhập thêm</p>
+</div>
+<a class="text-link" href="/batches">Mở kho <i class="bi bi-arrow-right">
+</i>
+</a>
+</div>
+<div class="compact-list">
+<% lowStock.forEach((item)=>{ %>
+<div class="compact-row">
+<span>
+<strong>
+<%= item.name %>
+</strong>
+<small>
+<%= item.sku %>
+</small>
+</span>
+<span class="stock-badge stock-low">
+<%= item.stock %> / <%= item.reorder_level %>
+</span>
+</div>
+<% }) %>
+<% if (!lowStock.length) { %>
+<p class="muted">Không có sản phẩm dưới ngưỡng.</p>
+<% } %>
+</div>
+</article>
+<article class="panel">
+<div class="panel-heading">
+<div>
+<h2>Lô sắp hết hạn</h2>
+<p>Trong 90 ngày tới</p>
+</div>
+<a class="text-link" href="/batches">Xem lô hàng <i class="bi bi-arrow-right">
+</i>
+</a>
+</div>
+<div class="compact-list">
+<% expiring.forEach((item)=>{ %>
+<div class="compact-row">
+<span>
+<strong>
+<%= item.name %>
+</strong>
+<small>
+<%= item.batch_code %> · SL <%= item.quantity_remaining %>
+</small>
+</span>
+<span class="status status-warning">
+<%= date(item.expires_on) %>
+</span>
+</div>
+<% }) %>
+<% if (!expiring.length) { %>
+<p class="muted">Không có lô sắp hết hạn trong 90 ngày.</p>
+<% } %>
+</div>
+</article>
+</section>
+<%- include('../partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

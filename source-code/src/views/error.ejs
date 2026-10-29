@@ -1,0 +1,25 @@
+<%- include('partials/head',{title}) %>
+<main class="error-page">
+<div class="error-card">
+<span class="error-code">
+<%= status %>
+</span>
+<span class="error-icon">
+<i class="bi bi-exclamation-diamond">
+</i>
+</span>
+<h1>
+<%= title %>
+</h1>
+<p>
+<%= message %>
+</p>
+<a class="button button-primary" href="<%= currentUser ? '/' : '/login' %>">
+<i class="bi bi-arrow-left">
+</i> Quay lại hệ thống</a>
+</div>
+</main>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>

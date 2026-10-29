@@ -1,0 +1,232 @@
+<%- include('partials/head', { title }) %>
+<div class="app-shell">
+<%- include('partials/sidebar') %>
+<main class="main-area">
+<%- include('partials/topbar') %>
+<div class="page-content">
+  <%- include('partials/flash') %>
+  <section class="welcome-row">
+<div>
+<p class="eyebrow">TUESDAY · RETAIL OVERVIEW</p>
+<h1>Chào ngày mới, <%= currentUser.fullName.split(' ')[0] %> <span class="wave">✦</span>
+</h1>
+<p class="muted">Đây là tình hình cửa hàng của bạn hôm nay.</p>
+</div>
+<a class="button button-primary" href="/orders/new">
+<i class="bi bi-plus-lg">
+</i> Tạo đơn hàng</a>
+</section>
+  <section class="stat-grid">
+    <article class="stat-card">
+<div class="stat-top">
+<span class="stat-icon icon-lilac">
+<i class="bi bi-droplet">
+</i>
+</span>
+<span class="stat-label">Sản phẩm đang bán</span>
+</div>
+<strong class="stat-value">
+<%= stats.products.toLocaleString('vi-VN') %>
+</strong>
+<span class="stat-foot">Danh mục hàng hóa</span>
+</article>
+    <article class="stat-card">
+<div class="stat-top">
+<span class="stat-icon icon-peach">
+<i class="bi bi-people">
+</i>
+</span>
+<span class="stat-label">Khách hàng</span>
+</div>
+<strong class="stat-value">
+<%= stats.customers.toLocaleString('vi-VN') %>
+</strong>
+<span class="stat-foot">Hồ sơ khách hàng</span>
+</article>
+    <article class="stat-card">
+<div class="stat-top">
+<span class="stat-icon icon-green">
+<i class="bi bi-receipt">
+</i>
+</span>
+<span class="stat-label">Đơn hàng hôm nay</span>
+</div>
+<strong class="stat-value">
+<%= stats.ordersToday.toLocaleString('vi-VN') %>
+</strong>
+<span class="stat-foot">Đơn đã hoàn tất</span>
+</article>
+    <article class="stat-card">
+<div class="stat-top">
+<span class="stat-icon icon-rose">
+<i class="bi bi-currency-exchange">
+</i>
+</span>
+<span class="stat-label">Doanh thu hôm nay</span>
+</div>
+<strong class="stat-value stat-money">
+<%= money(stats.revenueToday) %>
+</strong>
+<span class="stat-foot">Tổng đơn hoàn tất trong ngày</span>
+</article>
+  </section>
+  <section class="dashboard-grid">
+    <article class="panel chart-panel">
+<div class="panel-heading">
+<div>
+<h2>Doanh thu gần đây</h2>
+<p>7 ngày gần nhất · VNĐ</p>
+</div>
+<a class="text-link" href="/reports">Xem báo cáo <i class="bi bi-arrow-up-right">
+</i>
+</a>
+</div>
+      <div class="chart-wrap">
+<div class="chart-y-labels">
+<span>cao</span>
+<span>trung bình</span>
+<span>thấp</span>
+</div>
+<div class="bar-chart" role="img" aria-label="Biểu đồ doanh thu 7 ngày">
+        <% const maxRevenue = Math.max(1, ...chart.map((item) => Number(item.revenue))); %>
+        <% chart.forEach((item) => { const height = Math.max(4, Number(item.revenue) / maxRevenue * 100); %>
+          <div class="bar-column">
+<span class="bar-tooltip">
+<%= money(item.revenue) %>
+</span>
+<div class="bar-track">
+<div class="bar-fill" style="height:<%= height %>%">
+</div>
+</div>
+<span class="bar-label">
+<%= item.label %>
+</span>
+</div>
+        <% }) %>
+      </div>
+</div>
+    </article>
+    <article class="panel stock-panel">
+<div class="panel-heading">
+<div>
+<h2>Cần chú ý</h2>
+<p>Sản phẩm sắp hết hàng</p>
+</div>
+<span class="count-pill">
+<%= lowStock.length %>
+</span>
+</div>
+      <% if (!lowStock.length) { %>
+<div class="empty-state compact">
+<span class="empty-icon">
+<i class="bi bi-check2-circle">
+</i>
+</span>
+<strong>Tồn kho ổn định</strong>
+<p>Chưa có sản phẩm dưới ngưỡng.</p>
+</div>
+<% } else { %>
+      <div class="stock-list">
+<% lowStock.forEach((item) => { %>
+<a class="stock-item" href="/products/<%= item.id %>">
+<span class="product-thumb">
+<i class="bi bi-droplet">
+</i>
+</span>
+<span class="stock-name">
+<strong>
+<%= item.name %>
+</strong>
+<small>
+<%= item.sku %> · Ngưỡng <%= item.reorder_level %>
+</small>
+</span>
+<span class="stock-qty">
+<strong>
+<%= item.stock %>
+</strong>
+<small>còn lại</small>
+</span>
+</a>
+<% }) %>
+</div>
+<% } %>
+      <a class="panel-bottom-link" href="/batches">Quản lý tồn kho <i class="bi bi-arrow-right">
+</i>
+</a>
+    </article>
+  </section>
+  <section class="panel recent-panel">
+<div class="panel-heading">
+<div>
+<h2>Đơn hàng gần đây</h2>
+<p>Theo dõi các giao dịch mới nhất</p>
+</div>
+<a class="button button-secondary button-small" href="/orders">Tất cả đơn hàng <i class="bi bi-arrow-right">
+</i>
+</a>
+</div>
+    <% if (!recentOrders.length) { %>
+<div class="empty-state">
+<span class="empty-icon">
+<i class="bi bi-receipt">
+</i>
+</span>
+<strong>Chưa có đơn hàng</strong>
+<p>Tạo đơn đầu tiên để bắt đầu theo dõi doanh thu.</p>
+</div>
+<% } else { %>
+    <div class="table-responsive">
+<table class="data-table">
+<thead>
+<tr>
+<th>MÃ ĐƠN</th>
+<th>KHÁCH HÀNG</th>
+<th>NGÀY TẠO</th>
+<th>TỔNG CỘNG</th>
+<th>TRẠNG THÁI</th>
+<th>
+</th>
+</tr>
+</thead>
+<tbody>
+<% recentOrders.forEach((order) => { %>
+<tr>
+<td>
+<a class="cell-link" href="/orders/<%= order.id %>">
+<%= order.order_code %>
+</a>
+</td>
+<td>
+<%= order.customer_name || 'Khách lẻ' %>
+</td>
+<td>
+<%= dateTime(order.created_at) %>
+</td>
+<td class="money-cell">
+<%= money(order.total_amount) %>
+</td>
+<td>
+<span class="status status-success">Hoàn tất</span>
+</td>
+<td>
+<a class="row-action" href="/orders/<%= order.id %>" aria-label="Xem đơn">
+<i class="bi bi-arrow-up-right">
+</i>
+</a>
+</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+</div>
+<% } %>
+  </section>
+  <%- include('partials/footer') %>
+</div>
+</main>
+</div>
+<script src="/js/app.js" defer>
+</script>
+</body>
+</html>
